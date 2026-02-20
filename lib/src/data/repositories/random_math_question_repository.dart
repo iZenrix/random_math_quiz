@@ -37,6 +37,9 @@ class RandomMathQuestionRepository implements MathQuestionRepository {
 
       if (ans.abs().toDouble() > config.maxAbsValue) continue;
       if (config.requireNonNegativeResult && ans.n.isNegative) continue;
+      if (config.requireIntegerAnswer && !ans.isInteger) continue;
+      if (config.requireNonNegativeOperands && _hasNegativeOperand(expr)) continue;
+      if (config.requireNonNegativeIntermediate && _hasNegativeIntermediate(expr)) continue;
 
       final formatter = ExprFormatter(
         unicodeOps: config.unicodeOperators,
@@ -45,6 +48,8 @@ class RandomMathQuestionRepository implements MathQuestionRepository {
       );
 
       final prompt = '${expr.format(formatter)} = ?';
+
+      final mode = _answerMode(ans, config);
 
       return MathQuestion(
         id: _id(rng),
@@ -55,11 +60,14 @@ class RandomMathQuestionRepository implements MathQuestionRepository {
         metadata: {
           'seeded': _randomProvider is SeededRandomProvider,
           'attempt': attempt,
+          'answer_mode': mode.mode, // integer | decimal | fraction
+          'decimal_digits': mode.decimalDigits,
         },
         explanationSteps: _basicSteps(expr),
       );
     }
 
+    // fallback: simplest question
     final fallbackExpr = NumExpr(Rational.int(1));
     return MathQuestion(
       id: _id(_randomProvider.rng),
@@ -80,6 +88,40 @@ class RandomMathQuestionRepository implements MathQuestionRepository {
     return out;
   }
 
+  bool _hasNegativeIntermediate(Expr expr) {
+    if (expr is BinExpr) {
+      if (_hasNegativeIntermediate(expr.left)) return true;
+      if (_hasNegativeIntermediate(expr.right)) return true;
+
+      final v = expr.eval(); // Rational
+      return v.n.isNegative;
+    }
+    return false;
+  }
+
+  bool _hasNegativeOperand(Expr expr) {
+    if (expr is NumExpr) return expr.value.n.isNegative;
+    if (expr is BinExpr) {
+      return _hasNegativeOperand(expr.left) || _hasNegativeOperand(expr.right);
+    }
+    return false;
+  }
+
+  _AnswerMode _answerMode(Rational ans, GeneratorConfig config) {
+    if (config.requireIntegerAnswer || ans.isInteger) {
+      return const _AnswerMode('integer', 0);
+    }
+
+    final scale = ans.terminatingDecimalScale(); // int? (null kalau non-terminating)
+    if (scale != null &&
+        scale <= config.maxDecimalAnswerDigits &&
+        config.allowDecimalInput) {
+      return _AnswerMode('decimal', scale);
+    }
+
+    return const _AnswerMode('fraction', 0);
+  }
+
   String _id(Random rng) {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
     final sb = StringBuffer();
@@ -93,4 +135,10 @@ class RandomMathQuestionRepository implements MathQuestionRepository {
     final ans = expr.eval();
     return ['Evaluate the expression to get ${ans.asFractionString()}'];
   }
+}
+
+class _AnswerMode {
+  final String mode; // 'integer' | 'decimal' | 'fraction'
+  final int decimalDigits;
+  const _AnswerMode(this.mode, this.decimalDigits);
 }

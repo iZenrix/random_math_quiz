@@ -119,6 +119,32 @@ class Rational implements Comparable<Rational> {
 
   /// Returns true if this rational has a terminating decimal expansion.
   /// For reduced n/d, this holds iff d has no prime factors other than 2 and 5.
+  /// If this rational has a terminating decimal, returns the minimal number of digits
+  /// after the decimal point required to represent it exactly.
+  /// Returns null if it is non-terminating.
+  int? terminatingDecimalScale() {
+    if (isInteger) return 0;
+
+    var dd = d;
+    int a = 0; // exponent of 2
+    int b = 0; // exponent of 5
+
+    final two = BigInt.from(2);
+    final five = BigInt.from(5);
+
+    while (dd % two == BigInt.zero) {
+      dd = dd ~/ two;
+      a++;
+    }
+    while (dd % five == BigInt.zero) {
+      dd = dd ~/ five;
+      b++;
+    }
+
+    if (dd != BigInt.one) return null;
+    return a > b ? a : b;
+  }
+
   bool get isTerminatingDecimal {
     var dd = d;
     final two = BigInt.from(2);
