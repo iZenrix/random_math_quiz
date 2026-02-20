@@ -36,11 +36,12 @@ class RandomMathQuestionRepository implements MathQuestionRepository {
       }
 
       if (ans.abs().toDouble() > config.maxAbsValue) continue;
+      if (config.requireNonNegativeResult && ans.n.isNegative) continue;
 
       final formatter = ExprFormatter(
         unicodeOps: config.unicodeOperators,
-        numberDisplay: NumberDisplay.mixed,
-        decimalMaxScale: max(config.decimalScaleMax, 6),
+        numberDisplay: config.promptNumberDisplay,
+        decimalMaxScale: config.promptDecimalMaxScale,
       );
 
       final prompt = '${expr.format(formatter)} = ?';

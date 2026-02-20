@@ -1,5 +1,6 @@
 import '../value_objects/difficulty.dart';
 import '../value_objects/math_op.dart';
+import '../entities/expression.dart';
 
 enum NumberKind { integer, fraction, decimal }
 
@@ -21,6 +22,18 @@ class GeneratorConfig {
   /// Limit absolute value of intermediate and final results (helps keep questions readable).
   final int maxAbsValue;
 
+  /// If true, generator will reject questions whose final answer is negative.
+  final bool requireNonNegativeResult;
+
+  /// How numbers are displayed in the prompt.
+  /// - smart: integer as-is, terminating decimal as decimal, otherwise fraction.
+  /// - fraction: always a/b (improper fraction, no mixed numbers)
+  /// - decimal: always decimal string (may truncate repeating decimals)
+  final NumberDisplay promptNumberDisplay;
+
+  /// Max decimal digits when promptNumberDisplay is decimal/smart.
+  final int promptDecimalMaxScale;
+
   /// If generating fractions, denominator will be in [2..maxDenominator].
   final int maxDenominator;
 
@@ -41,6 +54,9 @@ class GeneratorConfig {
     this.maxOperands = 5,
     this.allowNegative = false,
     this.maxAbsValue = 10000,
+    this.requireNonNegativeResult = true,
+    this.promptNumberDisplay = NumberDisplay.smart,
+    this.promptDecimalMaxScale = 6,
     this.maxDenominator = 50,
     this.decimalScaleMin = 1,
     this.decimalScaleMax = 3,

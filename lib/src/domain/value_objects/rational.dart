@@ -116,6 +116,34 @@ class Rational implements Comparable<Rational> {
     return '$sign$whole ${Rational(rem, d).asFractionString()}';
   }
 
+
+  /// Returns true if this rational has a terminating decimal expansion.
+  /// For reduced n/d, this holds iff d has no prime factors other than 2 and 5.
+  bool get isTerminatingDecimal {
+    var dd = d;
+    final two = BigInt.from(2);
+    final five = BigInt.from(5);
+    while (dd % two == BigInt.zero) {
+      dd = dd ~/ two;
+    }
+    while (dd % five == BigInt.zero) {
+      dd = dd ~/ five;
+    }
+    return dd == BigInt.one;
+  }
+
+  /// "Smart" display:
+  /// - integers -> "5"
+  /// - terminating decimals -> decimal string
+  /// - otherwise -> fraction string
+  String asSmartString({int maxScale = 6, bool trimTrailingZeros = true}) {
+    if (isInteger) return n.toString();
+    if (isTerminatingDecimal) {
+      return asDecimalString(maxScale: maxScale, trimTrailingZeros: trimTrailingZeros);
+    }
+    return asFractionString();
+  }
+
   @override
   int compareTo(Rational other) => (n * other.d).compareTo(other.n * d);
 
