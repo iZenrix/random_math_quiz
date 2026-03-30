@@ -5,6 +5,3 @@ linter:
     - always_declare_return_types
     - prefer_final_locals
     - prefer_final_fields
-
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options

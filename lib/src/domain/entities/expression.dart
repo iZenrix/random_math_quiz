@@ -79,12 +79,13 @@ class ExprFormatter {
 
   const ExprFormatter({
     this.unicodeOps = true,
-    this.numberDisplay = NumberDisplay.mixed,
+    this.numberDisplay = NumberDisplay.smart,
     this.decimalMaxScale = 6,
   });
 
   String formatNumber(Rational r) {
     return switch (numberDisplay) {
+      NumberDisplay.smart => r.asSmartString(maxScale: decimalMaxScale),
       NumberDisplay.fraction => r.asFractionString(),
       NumberDisplay.decimal => r.asDecimalString(maxScale: decimalMaxScale),
       NumberDisplay.mixed => r.asMixedString(),
@@ -92,4 +93,4 @@ class ExprFormatter {
   }
 }
 
-enum NumberDisplay { fraction, decimal, mixed }
+enum NumberDisplay { smart, fraction, decimal, mixed }

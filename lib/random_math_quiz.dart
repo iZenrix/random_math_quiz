@@ -8,3 +8,5 @@ export 'src/domain/value_objects/difficulty.dart';
 export 'src/domain/usecases/generate_question.dart';
 export 'src/domain/usecases/generate_batch.dart';
 export 'src/domain/config/generator_config.dart';
+export 'src/domain/entities/answer_check_result.dart';
+export 'src/domain/usecases/validate_answer.dart';
