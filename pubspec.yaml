@@ -1,22 +1,17 @@
 name: random_math_quiz
-description: "A new Flutter project."
-version: 0.0.1
-homepage:
+description: Generate random math quiz questions with difficulty levels, exact rational arithmetic, and answer validation.
+version: 0.1.0
+repository: https://github.com/iZenrix/random_math_quiz.git
+topics:
+  - math
+  - quiz
+  - education
+  - random
+  - fractions
 
 environment:
   sdk: ^3.8.0
-  flutter: ">=1.17.0"
-
-dependencies:
-  flutter:
-    sdk: flutter
-  meta: ^1.11.0
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^5.0.0
+  lints: ^5.0.0
   test: ^1.25.15
-
-flutter:
-

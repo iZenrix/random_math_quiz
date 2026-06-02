@@ -11,8 +11,12 @@ class ValidateAnswer {
     required String userInput,
     required GeneratorConfig config,
   }) {
-    final mode = (question.metadata['answer_mode'] as String?) ?? _inferMode(question.answer, config);
-    final digits = (question.metadata['decimal_digits'] as int?) ?? config.maxDecimalAnswerDigits;
+    final mode =
+        (question.metadata['answer_mode'] as String?) ??
+        _inferMode(question.answer, config);
+    final digits =
+        (question.metadata['decimal_digits'] as int?) ??
+        config.maxDecimalAnswerDigits;
 
     final parsed = _parseUserInput(userInput.trim(), config);
     if (parsed == null) {
@@ -57,10 +61,13 @@ class ValidateAnswer {
       }
 
       final userDigits = _countDecimalDigits(userInput);
-      if (config.strictDecimalInputDigits && userDigits != null && userDigits > digits) {
+      if (config.strictDecimalInputDigits &&
+          userDigits != null &&
+          userDigits > digits) {
         return AnswerCheckResult(
           isCorrect: false,
-          message: 'Terlalu banyak angka di belakang koma. Maksimal $digits digit.',
+          message:
+              'Terlalu banyak angka di belakang koma. Maksimal $digits digit.',
           userValue: parsed,
           expected: question.answer,
           decimalDigits: digits,
@@ -70,7 +77,9 @@ class ValidateAnswer {
       final expectedRounded = config.roundDecimalAnswerToMaxDigits
           ? _roundToDigits(question.answer, digits)
           : question.answer;
-      final userRounded = config.roundDecimalAnswerToMaxDigits ? _roundToDigits(parsed, digits) : parsed;
+      final userRounded = config.roundDecimalAnswerToMaxDigits
+          ? _roundToDigits(parsed, digits)
+          : parsed;
 
       final ok = expectedRounded == userRounded;
       return AnswerCheckResult(
@@ -116,7 +125,11 @@ class ValidateAnswer {
   String _inferMode(Rational ans, GeneratorConfig config) {
     if (config.requireIntegerAnswer || ans.isInteger) return 'integer';
     final s = ans.terminatingDecimalScale();
-    if (s != null && s <= config.maxDecimalAnswerDigits && config.allowDecimalInput) return 'decimal';
+    if (s != null &&
+        s <= config.maxDecimalAnswerDigits &&
+        config.allowDecimalInput) {
+      return 'decimal';
+    }
     return 'fraction';
   }
 
@@ -158,7 +171,9 @@ class ValidateAnswer {
       final frac = parts.length > 1 ? parts[1] : '';
       if (whole == null) return null;
       final scale = frac.length;
-      final fracInt = frac.isEmpty ? BigInt.zero : BigInt.tryParse(frac) ?? BigInt.zero;
+      final fracInt = frac.isEmpty
+          ? BigInt.zero
+          : BigInt.tryParse(frac) ?? BigInt.zero;
       final denom = BigInt.from(10).pow(scale);
       final sign = whole.isNegative ? -BigInt.one : BigInt.one;
       final absWhole = whole.abs();

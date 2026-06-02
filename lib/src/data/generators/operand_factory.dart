@@ -21,8 +21,10 @@ class OperandFactory {
     final r = _rng.nextDouble();
     final kinds = config.numberKinds;
 
-    final wantFraction = r < fractionProb && kinds.contains(NumberKind.fraction);
-    final wantDecimal = !wantFraction &&
+    final wantFraction =
+        r < fractionProb && kinds.contains(NumberKind.fraction);
+    final wantDecimal =
+        !wantFraction &&
         r < (fractionProb + decimalProb) &&
         kinds.contains(NumberKind.decimal);
 
@@ -71,7 +73,8 @@ class OperandFactory {
     required bool allowNegative,
     List<int>? friendlyDenominators,
   }) {
-    final denom = (friendlyDenominators != null && friendlyDenominators.isNotEmpty)
+    final denom =
+        (friendlyDenominators != null && friendlyDenominators.isNotEmpty)
         ? friendlyDenominators[_rng.nextInt(friendlyDenominators.length)]
         : 2 + _rng.nextInt(max(1, maxDenominator - 1));
 

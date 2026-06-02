@@ -79,7 +79,11 @@ class GeneratorConfig {
   const GeneratorConfig({
     required this.difficulty,
     this.allowedOps = const {MathOp.add, MathOp.sub, MathOp.mul, MathOp.div},
-    this.numberKinds = const {NumberKind.integer, NumberKind.fraction, NumberKind.decimal},
+    this.numberKinds = const {
+      NumberKind.integer,
+      NumberKind.fraction,
+      NumberKind.decimal,
+    },
     this.maxOperands = 5,
     this.allowNegative = false,
     this.maxAbsValue = 10000,
@@ -99,7 +103,25 @@ class GeneratorConfig {
     this.decimalScaleMax = 3,
     this.parenthesesProbability = 0.25,
     this.unicodeOperators = true,
-  });
+  }) : assert(allowedOps.length > 0, 'allowedOps must not be empty'),
+       assert(numberKinds.length > 0, 'numberKinds must not be empty'),
+       assert(maxOperands > 0, 'maxOperands must be > 0'),
+       assert(maxAbsValue >= 0, 'maxAbsValue must be >= 0'),
+       assert(
+         maxDecimalAnswerDigits >= 0,
+         'maxDecimalAnswerDigits must be >= 0',
+       ),
+       assert(promptDecimalMaxScale >= 0, 'promptDecimalMaxScale must be >= 0'),
+       assert(maxDenominator >= 2, 'maxDenominator must be >= 2'),
+       assert(decimalScaleMin >= 0, 'decimalScaleMin must be >= 0'),
+       assert(
+         decimalScaleMax >= decimalScaleMin,
+         'decimalScaleMax must be >= decimalScaleMin',
+       ),
+       assert(
+         parenthesesProbability >= 0 && parenthesesProbability <= 1,
+         'parenthesesProbability must be between 0 and 1',
+       );
 
   /// Staged defaults that match target usia (kids → teen → adult → expert).
   /// Kamu tetap bisa override manual field-field lain setelahnya.
@@ -121,9 +143,21 @@ class GeneratorConfig {
       DifficultyLevel.l2 => {NumberKind.integer},
       DifficultyLevel.l3 => {NumberKind.integer},
       DifficultyLevel.l4 => {NumberKind.integer},
-      DifficultyLevel.l5 => {NumberKind.integer, NumberKind.fraction, NumberKind.decimal},
-      DifficultyLevel.l6 => {NumberKind.integer, NumberKind.fraction, NumberKind.decimal},
-      DifficultyLevel.l7 => {NumberKind.integer, NumberKind.fraction, NumberKind.decimal},
+      DifficultyLevel.l5 => {
+        NumberKind.integer,
+        NumberKind.fraction,
+        NumberKind.decimal,
+      },
+      DifficultyLevel.l6 => {
+        NumberKind.integer,
+        NumberKind.fraction,
+        NumberKind.decimal,
+      },
+      DifficultyLevel.l7 => {
+        NumberKind.integer,
+        NumberKind.fraction,
+        NumberKind.decimal,
+      },
     };
 
     final maxDec = p.maxDecimalAnswerDigits;

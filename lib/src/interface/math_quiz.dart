@@ -29,6 +29,10 @@ class MathQuiz {
   List<MathQuestion> batch(int count) => _generateBatch(config, count);
 
   AnswerCheckResult checkAnswer(MathQuestion question, String userInput) {
-    return _validateAnswer(question: question, userInput: userInput, config: config);
+    return _validateAnswer(
+      question: question,
+      userInput: userInput,
+      config: config,
+    );
   }
 }

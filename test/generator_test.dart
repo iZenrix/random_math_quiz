@@ -19,7 +19,11 @@ void main() {
       config: GeneratorConfig(
         difficulty: DifficultyLevel.l4,
         allowedOps: {MathOp.add, MathOp.sub, MathOp.mul, MathOp.div},
-        numberKinds: {NumberKind.integer, NumberKind.fraction, NumberKind.decimal},
+        numberKinds: {
+          NumberKind.integer,
+          NumberKind.fraction,
+          NumberKind.decimal,
+        },
         maxOperands: 4,
         allowNegative: true,
         maxAbsValue: 10000,
@@ -43,7 +47,11 @@ void main() {
       config: GeneratorConfig(
         difficulty: DifficultyLevel.l5,
         allowedOps: {MathOp.div},
-        numberKinds: {NumberKind.integer, NumberKind.fraction, NumberKind.decimal},
+        numberKinds: {
+          NumberKind.integer,
+          NumberKind.fraction,
+          NumberKind.decimal,
+        },
         maxOperands: 3,
         allowNegative: true,
       ),

@@ -51,8 +51,11 @@ class BinExpr extends Expr {
     return '$leftStr ${op.symbol(unicode: formatter.unicodeOps)} $rightStr';
   }
 
-  String _maybeParen(Expr child,
-      {required bool forRight, required ExprFormatter formatter}) {
+  String _maybeParen(
+    Expr child, {
+    required bool forRight,
+    required ExprFormatter formatter,
+  }) {
     final childStr = child.format(formatter);
 
     // Parentheses rules:
@@ -61,7 +64,8 @@ class BinExpr extends Expr {
     if (child.precedence < precedence) return '($childStr)';
 
     if (forRight) {
-      final needs = (op == MathOp.sub || op == MathOp.div) &&
+      final needs =
+          (op == MathOp.sub || op == MathOp.div) &&
           child.precedence == precedence;
       if (needs) return '($childStr)';
     }

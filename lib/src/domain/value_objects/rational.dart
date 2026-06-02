@@ -77,27 +77,50 @@ class Rational implements Comparable<Rational> {
 
   /// Decimal formatting without floating point.
   /// - If value terminates, it will show exact decimal.
-  /// - Otherwise it will be rounded to [maxScale].
+  /// - Otherwise it will be rounded half-up to [maxScale].
   String asDecimalString({int maxScale = 6, bool trimTrailingZeros = true}) {
     if (maxScale < 0) throw ArgumentError('maxScale must be >= 0');
 
     final sign = n.isNegative ? '-' : '';
     final a = n.abs();
-    final integerPart = a ~/ d;
+    var integerPart = a ~/ d;
     var rem = a % d;
 
     if (rem == BigInt.zero) return '$sign$integerPart';
 
-    final buf = StringBuffer()..write('$sign$integerPart.');
+    if (maxScale == 0) {
+      if (rem * BigInt.from(2) >= d) {
+        integerPart += BigInt.one;
+      }
+      return '$sign$integerPart';
+    }
+
+    final digits = <int>[];
     for (var i = 0; i < maxScale; i++) {
       rem *= BigInt.from(10);
       final digit = rem ~/ d;
       rem = rem % d;
-      buf.write(digit.toString());
+      digits.add(digit.toInt());
       if (rem == BigInt.zero) break;
     }
 
-    var out = buf.toString();
+    if (rem != BigInt.zero && rem * BigInt.from(2) >= d) {
+      var carry = 1;
+      for (var i = digits.length - 1; i >= 0 && carry > 0; i--) {
+        final next = digits[i] + carry;
+        if (next == 10) {
+          digits[i] = 0;
+        } else {
+          digits[i] = next;
+          carry = 0;
+        }
+      }
+      if (carry > 0) {
+        integerPart += BigInt.one;
+      }
+    }
+
+    var out = '$sign$integerPart.${digits.join()}';
     if (trimTrailingZeros) {
       out = out.replaceFirst(RegExp(r'\.?0+$'), '');
     }
@@ -115,7 +138,6 @@ class Rational implements Comparable<Rational> {
     if (rem == BigInt.zero) return '$sign$whole';
     return '$sign$whole ${Rational(rem, d).asFractionString()}';
   }
-
 
   /// Returns true if this rational has a terminating decimal expansion.
   /// For reduced n/d, this holds iff d has no prime factors other than 2 and 5.
@@ -165,7 +187,10 @@ class Rational implements Comparable<Rational> {
   String asSmartString({int maxScale = 6, bool trimTrailingZeros = true}) {
     if (isInteger) return n.toString();
     if (isTerminatingDecimal) {
-      return asDecimalString(maxScale: maxScale, trimTrailingZeros: trimTrailingZeros);
+      return asDecimalString(
+        maxScale: maxScale,
+        trimTrailingZeros: trimTrailingZeros,
+      );
     }
     return asFractionString();
   }

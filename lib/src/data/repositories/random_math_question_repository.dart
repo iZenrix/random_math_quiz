@@ -38,8 +38,13 @@ class RandomMathQuestionRepository implements MathQuestionRepository {
       if (ans.abs().toDouble() > config.maxAbsValue) continue;
       if (config.requireNonNegativeResult && ans.n.isNegative) continue;
       if (config.requireIntegerAnswer && !ans.isInteger) continue;
-      if (config.requireNonNegativeOperands && _hasNegativeOperand(expr)) continue;
-      if (config.requireNonNegativeIntermediate && _hasNegativeIntermediate(expr)) continue;
+      if (config.requireNonNegativeOperands && _hasNegativeOperand(expr)) {
+        continue;
+      }
+      if (config.requireNonNegativeIntermediate &&
+          _hasNegativeIntermediate(expr)) {
+        continue;
+      }
 
       final formatter = ExprFormatter(
         unicodeOps: config.unicodeOperators,
@@ -112,7 +117,8 @@ class RandomMathQuestionRepository implements MathQuestionRepository {
       return const _AnswerMode('integer', 0);
     }
 
-    final scale = ans.terminatingDecimalScale(); // int? (null kalau non-terminating)
+    final scale = ans
+        .terminatingDecimalScale(); // int? (null kalau non-terminating)
     if (scale != null &&
         scale <= config.maxDecimalAnswerDigits &&
         config.allowDecimalInput) {

@@ -17,9 +17,12 @@ class ExpressionBuilder {
     final profile = DifficultyDefaults.profile(config.difficulty);
 
     final integerOnly =
-        config.numberKinds.length == 1 && config.numberKinds.contains(NumberKind.integer);
+        config.numberKinds.length == 1 &&
+        config.numberKinds.contains(NumberKind.integer);
 
-    if (integerOnly && (config.requireIntegerAnswer || config.requireNonNegativeIntermediate)) {
+    if (integerOnly &&
+        (config.requireIntegerAnswer ||
+            config.requireNonNegativeIntermediate)) {
       return _buildSafeInteger(config, profile);
     }
 
@@ -32,7 +35,9 @@ class ExpressionBuilder {
     Expr expr = NumExpr(_randomOperand(profile, config));
     for (var i = 1; i < count; i++) {
       final op = _randomOp(config.allowedOps);
-      final right = NumExpr(_randomOperand(profile, config, avoidZeroForDiv: op == MathOp.div));
+      final right = NumExpr(
+        _randomOperand(profile, config, avoidZeroForDiv: op == MathOp.div),
+      );
       expr = _combine(expr, op, right, config, profile);
     }
 
@@ -61,7 +66,10 @@ class ExpressionBuilder {
 
       if (op == MathOp.div) {
         final cur = current.isInteger ? current.toIntExact().abs() : 0;
-        final divisor = _pickDivisor(cur, maxFactor: max(1, profile.maxInt.abs()));
+        final divisor = _pickDivisor(
+          cur,
+          maxFactor: max(1, profile.maxInt.abs()),
+        );
         final rhs = Rational.int(divisor == 0 ? 1 : divisor);
         expr = BinExpr(expr, MathOp.div, NumExpr(rhs));
         current = current / rhs;
@@ -71,7 +79,9 @@ class ExpressionBuilder {
       var rhs = _randomOperand(profile, config);
       if (!rhs.isInteger) rhs = Rational.int(rhs.toDouble().round());
 
-      if (op == MathOp.sub && config.requireNonNegativeIntermediate && current.isInteger) {
+      if (op == MathOp.sub &&
+          config.requireNonNegativeIntermediate &&
+          current.isInteger) {
         final cur = current.toIntExact();
         final b = rhs.toIntExact().abs();
         final safe = b <= cur ? b : (cur == 0 ? 0 : _rng.nextInt(cur + 1));
@@ -102,7 +112,11 @@ class ExpressionBuilder {
     return absValue > 1 ? absValue : 1;
   }
 
-  Rational _randomOperand(DifficultyProfile profile, GeneratorConfig config, {bool avoidZeroForDiv = false}) {
+  Rational _randomOperand(
+    DifficultyProfile profile,
+    GeneratorConfig config, {
+    bool avoidZeroForDiv = false,
+  }) {
     Rational v;
     var tries = 0;
     do {
@@ -131,11 +145,22 @@ class ExpressionBuilder {
     return list[_rng.nextInt(list.length)];
   }
 
-  Expr _combine(Expr current, MathOp op, Expr right, GeneratorConfig config, DifficultyProfile profile) {
-    if (_rng.nextDouble() < config.parenthesesProbability && current is BinExpr) {
+  Expr _combine(
+    Expr current,
+    MathOp op,
+    Expr right,
+    GeneratorConfig config,
+    DifficultyProfile profile,
+  ) {
+    if (_rng.nextDouble() < config.parenthesesProbability &&
+        current is BinExpr) {
       final op2 = _randomOp(config.allowedOps);
-      final a = NumExpr(_randomOperand(profile, config, avoidZeroForDiv: op2 == MathOp.div));
-      final b = NumExpr(_randomOperand(profile, config, avoidZeroForDiv: op2 == MathOp.div));
+      final a = NumExpr(
+        _randomOperand(profile, config, avoidZeroForDiv: op2 == MathOp.div),
+      );
+      final b = NumExpr(
+        _randomOperand(profile, config, avoidZeroForDiv: op2 == MathOp.div),
+      );
       final sub = BinExpr(a, op2, b);
       return BinExpr(current, op, sub);
     }

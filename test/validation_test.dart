@@ -1,5 +1,4 @@
 import 'package:random_math_quiz/random_math_quiz.dart';
-import 'package:random_math_quiz/src/domain/entities/expression.dart';
 import 'package:test/test.dart';
 
 void main() {
